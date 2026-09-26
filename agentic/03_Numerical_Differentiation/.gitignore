@@ -1,0 +1,6 @@
+# Track only the project brief and the notebook; everything the
+# agentic session generated alongside them stays local.
+*
+!.gitignore
+!Contour_Integration.md
+!Contour_Integration.ipynb
