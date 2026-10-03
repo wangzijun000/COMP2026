@@ -1,0 +1,6 @@
+# Track only the project brief and the notebook; everything the
+# agentic session generated alongside them stays local.
+*
+!.gitignore
+!Chaos_and_the_Butterfly_Effect.md
+!Chaos_and_the_Butterfly_Effect.ipynb
