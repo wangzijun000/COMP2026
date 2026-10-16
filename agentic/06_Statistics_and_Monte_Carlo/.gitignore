@@ -1,0 +1,6 @@
+# Track only the project brief and the notebook; everything the
+# agentic session generated alongside them stays local.
+*
+!.gitignore
+!Path_Integral_Monte_Carlo.md
+!Path_Integral_Monte_Carlo.ipynb
