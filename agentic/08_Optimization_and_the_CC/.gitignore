@@ -1,0 +1,6 @@
+# Track only the project brief and the notebook; everything the
+# agentic session generated alongside them stays local.
+*
+!.gitignore
+!Figure_Eight_Orbit.md
+!Figure_Eight_Orbit.ipynb
