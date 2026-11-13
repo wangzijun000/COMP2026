@@ -1,0 +1,6 @@
+# Track only the project brief and the notebook; everything the
+# agentic session generated alongside them stays local.
+*
+!.gitignore
+!Rabi_Cramer_Rao.md
+!Rabi_Cramer_Rao.ipynb
