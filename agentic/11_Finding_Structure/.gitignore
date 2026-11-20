@@ -1,0 +1,6 @@
+# Track only the project brief and the notebook; everything the
+# agentic session generated alongside them stays local.
+*
+!.gitignore
+!Quantum_Ising_Snapshots.md
+!Quantum_Ising_Snapshots.ipynb
