@@ -309,10 +309,42 @@ Predict first for each item, then measure.
     is no longer quadratic. The exact discrete optimum comes from a deterministic
     minimization, with no sampling.
   - Treat this as exploratory, because we did not smoke-test it.
-- **Tabular Q-learning.** Discretize $x$ and the action set, run classical tabular
-  Q-learning, and watch the discretization limit what it can reach compared with
-  $W_{\rm fb}$. This gives the textbook picture of state and action spaces, at a cost you
-  can measure.
+- **Tabular Q-learning.** This gives the textbook picture of state and action spaces, at a
+  cost you can measure.
+  - **Make the spaces finite.** Put the measured $x$ on a grid of spacing $\delta x$ over
+    $[-3.5, 8]$ and $u$ on a grid of spacing $\delta u$ over $[-1, 6.5]$.
+  - **Regroup the rewards** as $-\tfrac12(x - u)^2 + \tfrac12(x' - u)^2$, plus the constant
+    $-\tfrac12 x_0^2$ and the final $\tfrac12(x_N - \Delta\lambda)^2$, so that the state needs no
+    $\lambda_{\rm prev}$.
+  - **The environment must *be* the discrete MDP** for $Q^*$ to be exact. Snap $x'$ to the
+    nearest grid point, use exact Gaussian bin masses for $P(x'|x,u)$, and get $Q^*$ by value
+    iteration.
+  - **Measure the discretization cost** by running the tabular policy in the continuous
+    environment, paired on the same random numbers with the exact feedback policy. The
+    error bar drops from about 0.008 to below 0.001.
+  - Ours:
+
+    | $\delta x = \delta u$ | table entries | $V^*$ of the grid MDP | cost vs $W_{\rm fb}$ (paired) |
+    |---|---|---|---|
+    | 0.5 | 7,680 | 5.4403 | 0.0555 ± 0.0007 |
+    | 0.25 | 29,140 | 5.4607 | 0.0143 ± 0.0004 |
+    | 0.125 | 113,460 | 5.4658 | 0.0041 ± 0.0002 |
+
+    The grid MDP's own optimum sits *below* $W_{\rm fb}$, because snapping makes it a different
+    system.
+  - **Q-learning run.** Watkins Q-learning on the $\delta = 0.25$ grid, with $\epsilon = 0.2$ and
+    step size $1/n^{0.7}$. Run $B = 2000$ episodes in parallel and average the samples that hit
+    the same cell. Start at $Q = 0$, and take the greedy policy over actions actually tried.
+  - **Our result.** 6M episodes ($1.2\times10^8$ transitions, 28 s) reached $W = 5.521$ in the
+    grid MDP. That is 92% of the gain over open loop, with the greedy action within one grid
+    step of optimal on 87% of visited states. In the continuous environment the policy cost
+    $0.073$ more than $W_{\rm fb}$.
+  - Two earlier attempts went wrong:
+    - With uniformly random actions, and a greedy evaluation that also counted never-tried
+      actions (still at their initial $Q = 0$), the policy was a disaster (11.2).
+    - A step size of $1/n$ stalled near 8.
+  - Compare with fitted Q-iteration's 99.8% from $2\times10^6$ transitions: the
+    difference is generalization.
 
 ## Out of Scope
 
@@ -357,7 +389,8 @@ Predict first for each item, then measure.
 - **Seeds.** Fix all seeds. Monte Carlo CHECKs compare against their own error bars.
   Optimizer-convergence CHECKs use the relative criteria stated above, and the notebook
   says which kind each CHECK is.
-- **Run time.** The whole notebook should run in about two minutes on a laptop.
+- **Run time.** The whole notebook should run in about two minutes on a laptop. Ours took
+  75 s, including tabular Q-learning.
 - **Build incrementally.** Grow `build_nb.py` one section at a time, and rebuild and execute
   the notebook as each section lands. The notebook on disk should always show every result
   finished so far.
