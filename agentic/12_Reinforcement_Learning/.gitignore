@@ -1,0 +1,6 @@
+# Track only the project brief and the notebook; everything the
+# agentic session generated alongside them stays local.
+*
+!.gitignore
+!Optimal_Trap_Dragging.md
+!Optimal_Trap_Dragging.ipynb
